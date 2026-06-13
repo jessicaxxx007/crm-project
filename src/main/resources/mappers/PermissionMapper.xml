@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjx.dao.PermissionMapper">
+    <resultMap id="BaseResultMap" type="com.yjx.vo.Permission">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="role_id" jdbcType="INTEGER" property="roleId"/>
+        <result column="module_id" jdbcType="INTEGER" property="moduleId"/>
+        <result column="create_date" jdbcType="TIMESTAMP" property="createDate"/>
+        <result column="update_date" jdbcType="TIMESTAMP" property="updateDate"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, role_id, module_id, create_date, update_date
+    </sql>
+
+    <insert id="insertSelective" parameterType="com.yjx.vo.Permission" useGeneratedKeys="true" keyProperty="id">
+        insert into t_permission (role_id, module_id)
+        values (#{roleId,jdbcType=INTEGER}, #{moduleId,jdbcType=INTEGER})
+    </insert>
+    <insert id="insertHasKey" parameterType="com.yjx.vo.Permission" useGeneratedKeys="true" keyProperty="id">
+        insert into t_permission (role_id, module_id) values (#{roleId}, #{moduleId})
+    </insert>
+    <insert id="insertBatch" parameterType="java.util.List">
+        insert into t_permission (role_id, module_id) values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.roleId}, #{item.moduleId})
+        </foreach>
+    </insert>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/> from t_permission where id = #{id,jdbcType=INTEGER}
+    </select>
+    <select id="selectByParams" parameterType="com.yjx.base.BaseQuery" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/> from t_permission
+    </select>
+    <select id="selectByRoleId" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/> from t_permission where role_id = #{roleId}
+    </select>
+
+    <select id="countByModuleId" resultType="java.lang.Integer">
+        select count(1) from t_permission where module_id = #{moduleId}
+    </select>
+    <select id="countByRoleId" resultType="java.lang.Integer">
+        select count(1) from t_permission where role_id = #{roleId}
+    </select>
+    <select id="queryModulesByRoleId" resultType="java.util.Map">
+        select m.id, m.parent_id as pId, m.module_name as name, true as checked
+        from t_permission p join t_module m on p.module_id = m.id
+        where p.role_id = #{roleId} and m.is_valid = 1
+        union
+        select m.id, m.parent_id as pId, m.module_name as name, false as checked
+        from t_module m
+        where m.is_valid = 1
+        and m.id not in (select module_id from t_permission where role_id = #{roleId})
+        order by id
+    </select>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.yjx.vo.Permission">
+        update t_permission set role_id = #{roleId}, module_id = #{moduleId} where id = #{id}
+    </update>
+    <update id="updateBatch" parameterType="java.util.List"/>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from t_permission where id = #{id}
+    </delete>
+    <delete id="deleteBatch" parameterType="java.lang.Integer">
+        delete from t_permission where id in
+        <foreach collection="array" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+</mapper>

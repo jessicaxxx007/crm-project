@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjx.dao.SaleChanceMapper">
+    <resultMap id="BaseResultMap" type="com.yjx.vo.SaleChance">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="customer_name" jdbcType="VARCHAR" property="customerName"/>
+        <result column="chance_source" jdbcType="VARCHAR" property="chanceSource"/>
+        <result column="link_man" jdbcType="VARCHAR" property="linkMan"/>
+        <result column="link_phone" jdbcType="VARCHAR" property="linkPhone"/>
+        <result column="cgjl" jdbcType="INTEGER" property="cgjl"/>
+        <result column="overview" jdbcType="VARCHAR" property="overview"/>
+        <result column="description" jdbcType="VARCHAR" property="description"/>
+        <result column="create_man" jdbcType="VARCHAR" property="createMan"/>
+        <result column="create_date" jdbcType="TIMESTAMP" property="createDate"/>
+        <result column="assign_man" jdbcType="INTEGER" property="assignMan"/>
+        <result column="assign_time" jdbcType="TIMESTAMP" property="assignTime"/>
+        <result column="state" jdbcType="INTEGER" property="state"/>
+        <result column="dev_result" jdbcType="INTEGER" property="devResult"/>
+        <result column="is_valid" jdbcType="INTEGER" property="isValid"/>
+        <result column="update_date" jdbcType="TIMESTAMP" property="updateDate"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, customer_name, chance_source, link_man, link_phone, cgjl, overview, description,
+        create_man, create_date, assign_man, assign_time, state, dev_result, is_valid, update_date
+    </sql>
+
+    <insert id="insertSelective" parameterType="com.yjx.vo.SaleChance" useGeneratedKeys="true" keyProperty="id">
+        insert into t_sale_chance
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="customerName != null">customer_name,</if>
+            <if test="chanceSource != null">chance_source,</if>
+            <if test="linkMan != null">link_man,</if>
+            <if test="linkPhone != null">link_phone,</if>
+            <if test="cgjl != null">cgjl,</if>
+            <if test="overview != null">overview,</if>
+            <if test="description != null">description,</if>
+            <if test="createMan != null">create_man,</if>
+            <if test="createDate != null">create_date,</if>
+            <if test="assignMan != null">assign_man,</if>
+            <if test="assignTime != null">assign_time,</if>
+            <if test="state != null">state,</if>
+            <if test="devResult != null">dev_result,</if>
+            <if test="isValid != null">is_valid,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="customerName != null">#{customerName,jdbcType=VARCHAR},</if>
+            <if test="chanceSource != null">#{chanceSource,jdbcType=VARCHAR},</if>
+            <if test="linkMan != null">#{linkMan,jdbcType=VARCHAR},</if>
+            <if test="linkPhone != null">#{linkPhone,jdbcType=VARCHAR},</if>
+            <if test="cgjl != null">#{cgjl,jdbcType=INTEGER},</if>
+            <if test="overview != null">#{overview,jdbcType=VARCHAR},</if>
+            <if test="description != null">#{description,jdbcType=VARCHAR},</if>
+            <if test="createMan != null">#{createMan,jdbcType=VARCHAR},</if>
+            <if test="createDate != null">#{createDate,jdbcType=TIMESTAMP},</if>
+            <if test="assignMan != null">#{assignMan,jdbcType=INTEGER},</if>
+            <if test="assignTime != null">#{assignTime,jdbcType=TIMESTAMP},</if>
+            <if test="state != null">#{state,jdbcType=INTEGER},</if>
+            <if test="devResult != null">#{devResult,jdbcType=INTEGER},</if>
+            <if test="isValid != null">#{isValid,jdbcType=INTEGER},</if>
+        </trim>
+    </insert>
+    <insert id="insertHasKey" parameterType="com.yjx.vo.SaleChance" useGeneratedKeys="true" keyProperty="id">
+        insert into t_sale_chance (customer_name, chance_source, link_man, link_phone, cgjl, overview, description, create_man, create_date, assign_man, assign_time, state, dev_result, is_valid)
+        values (#{customerName}, #{chanceSource}, #{linkMan}, #{linkPhone}, #{cgjl}, #{overview}, #{description}, #{createMan}, #{createDate}, #{assignMan}, #{assignTime}, #{state}, #{devResult}, #{isValid})
+    </insert>
+    <insert id="insertBatch" parameterType="java.util.List">
+        insert into t_sale_chance (customer_name, chance_source, link_man, link_phone, cgjl, overview, description, create_man, create_date, assign_man, assign_time, state, dev_result, is_valid) values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.customerName}, #{item.chanceSource}, #{item.linkMan}, #{item.linkPhone}, #{item.cgjl}, #{item.overview}, #{item.description}, #{item.createMan}, #{item.createDate}, #{item.assignMan}, #{item.assignTime}, #{item.state}, #{item.devResult}, #{item.isValid})
+        </foreach>
+    </insert>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/> from t_sale_chance where id = #{id,jdbcType=INTEGER} and is_valid = 1
+    </select>
+
+    <select id="selectByParams" parameterType="com.yjx.query.SaleChanceQuery" resultMap="BaseResultMap">
+        select sc.*, u.true_name as uname
+        from t_sale_chance sc left join t_user u on sc.assign_man = u.id
+        where sc.is_valid = 1
+        <if test="customerName != null and customerName != ''">
+            and sc.customer_name like concat('%',#{customerName},'%')
+        </if>
+        <if test="createMan != null and createMan != ''">
+            and sc.create_man like concat('%',#{createMan},'%')
+        </if>
+        <if test="state != null and state != ''">
+            and sc.state = #{state}
+        </if>
+        <if test="assignMan != null">
+            and sc.assign_man = #{assignMan}
+        </if>
+        <if test="devResult != null and devResult != ''">
+            and sc.dev_result = #{devResult}
+        </if>
+        order by sc.create_date desc
+    </select>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.yjx.vo.SaleChance">
+        update t_sale_chance
+        <set>
+            <if test="customerName != null">customer_name = #{customerName,jdbcType=VARCHAR},</if>
+            <if test="chanceSource != null">chance_source = #{chanceSource,jdbcType=VARCHAR},</if>
+            <if test="linkMan != null">link_man = #{linkMan,jdbcType=VARCHAR},</if>
+            <if test="linkPhone != null">link_phone = #{linkPhone,jdbcType=VARCHAR},</if>
+            <if test="cgjl != null">cgjl = #{cgjl,jdbcType=INTEGER},</if>
+            <if test="overview != null">overview = #{overview,jdbcType=VARCHAR},</if>
+            <if test="description != null">description = #{description,jdbcType=VARCHAR},</if>
+            <if test="createMan != null">create_man = #{createMan,jdbcType=VARCHAR},</if>
+            <if test="assignMan != null">assign_man = #{assignMan,jdbcType=INTEGER},</if>
+            <if test="assignTime != null">assign_time = #{assignTime,jdbcType=TIMESTAMP},</if>
+            <if test="state != null">state = #{state,jdbcType=INTEGER},</if>
+            <if test="devResult != null">dev_result = #{devResult,jdbcType=INTEGER},</if>
+            <if test="isValid != null">is_valid = #{isValid,jdbcType=INTEGER},</if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateBatch" parameterType="java.util.List">
+        <foreach collection="list" item="item" separator=";">
+            update t_sale_chance set dev_result = #{item.devResult} where id = #{item.id}
+        </foreach>
+    </update>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        update t_sale_chance set is_valid = 0 where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <delete id="deleteBatch" parameterType="java.lang.Integer">
+        update t_sale_chance set is_valid = 0 where id in
+        <foreach collection="array" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <select id="queryAllSales" resultType="java.util.Map">
+        select id, true_name as uname from t_user where is_valid = 1
+    </select>
+</mapper>

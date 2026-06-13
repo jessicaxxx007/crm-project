@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjx.dao.CustomerLossMapper">
+    <resultMap id="BaseResultMap" type="com.yjx.vo.CustomerLoss">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="cus_no" jdbcType="VARCHAR" property="cusNo"/>
+        <result column="cus_name" jdbcType="VARCHAR" property="cusName"/>
+        <result column="cus_manager" jdbcType="VARCHAR" property="cusManager"/>
+        <result column="last_order_time" jdbcType="DATE" property="lastOrderTime"/>
+        <result column="confirm_loss_time" jdbcType="DATE" property="confirmLossTime"/>
+        <result column="state" jdbcType="INTEGER" property="state"/>
+        <result column="loss_reason" jdbcType="VARCHAR" property="lossReason"/>
+        <result column="is_valid" jdbcType="INTEGER" property="isValid"/>
+        <result column="create_date" jdbcType="TIMESTAMP" property="createDate"/>
+        <result column="update_date" jdbcType="TIMESTAMP" property="updateDate"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, cus_no, cus_name, cus_manager, last_order_time, confirm_loss_time, state,
+        loss_reason, is_valid, create_date, update_date
+    </sql>
+
+    <insert id="insertSelective" parameterType="com.yjx.vo.CustomerLoss" useGeneratedKeys="true" keyProperty="id">
+        insert into t_customer_loss
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="cusNo != null">cus_no,</if>
+            <if test="cusName != null">cus_name,</if>
+            <if test="cusManager != null">cus_manager,</if>
+            <if test="lastOrderTime != null">last_order_time,</if>
+            <if test="confirmLossTime != null">confirm_loss_time,</if>
+            <if test="state != null">state,</if>
+            <if test="lossReason != null">loss_reason,</if>
+            <if test="isValid != null">is_valid,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="cusNo != null">#{cusNo},</if>
+            <if test="cusName != null">#{cusName},</if>
+            <if test="cusManager != null">#{cusManager},</if>
+            <if test="lastOrderTime != null">#{lastOrderTime},</if>
+            <if test="confirmLossTime != null">#{confirmLossTime},</if>
+            <if test="state != null">#{state},</if>
+            <if test="lossReason != null">#{lossReason},</if>
+            <if test="isValid != null">#{isValid},</if>
+        </trim>
+    </insert>
+    <insert id="insertHasKey" parameterType="com.yjx.vo.CustomerLoss" useGeneratedKeys="true" keyProperty="id">
+        insert into t_customer_loss (cus_no, cus_name, cus_manager, state, is_valid)
+        values (#{cusNo}, #{cusName}, #{cusManager}, #{state}, #{isValid})
+    </insert>
+    <insert id="insertBatch" parameterType="java.util.List">
+        insert into t_customer_loss (cus_no, cus_name, cus_manager, state, is_valid) values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.cusNo}, #{item.cusName}, #{item.cusManager}, #{item.state}, #{item.isValid})
+        </foreach>
+    </insert>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/> from t_customer_loss where id = #{id} and is_valid = 1
+    </select>
+    <select id="selectByParams" parameterType="com.yjx.base.BaseQuery" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/> from t_customer_loss where is_valid = 1 order by create_date desc
+    </select>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.yjx.vo.CustomerLoss">
+        update t_customer_loss
+        <set>
+            <if test="state != null">state = #{state},</if>
+            <if test="lossReason != null">loss_reason = #{lossReason},</if>
+            <if test="confirmLossTime != null">confirm_loss_time = #{confirmLossTime},</if>
+        </set>
+        where id = #{id}
+    </update>
+    <update id="updateBatch" parameterType="java.util.List"/>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        update t_customer_loss set is_valid = 0 where id = #{id}
+    </delete>
+    <delete id="deleteBatch" parameterType="java.lang.Integer">
+        update t_customer_loss set is_valid = 0 where id in
+        <foreach collection="array" item="item" open="(" separator="," close=")">#{item}</foreach>
+    </delete>
+
+    <select id="countByState" resultType="java.util.Map">
+        select
+            case state
+                when 0 then '暂缓流失'
+                when 1 then '已确认流失'
+                else '其他'
+            end as name,
+            count(1) as value
+        from t_customer_loss where is_valid = 1
+        group by state
+    </select>
+</mapper>

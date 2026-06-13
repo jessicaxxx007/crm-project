@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjx.dao.UserMapper">
+    <resultMap id="BaseResultMap" type="com.yjx.vo.User">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="user_pwd" jdbcType="VARCHAR" property="userPwd"/>
+        <result column="true_name" jdbcType="VARCHAR" property="trueName"/>
+        <result column="email" jdbcType="VARCHAR" property="email"/>
+        <result column="phone" jdbcType="VARCHAR" property="phone"/>
+        <result column="is_valid" jdbcType="INTEGER" property="isValid"/>
+        <result column="role_ids" jdbcType="VARCHAR" property="roleIds"/>
+        <result column="create_date" jdbcType="TIMESTAMP" property="createDate"/>
+        <result column="update_date" jdbcType="TIMESTAMP" property="updateDate"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, user_name, user_pwd, true_name, email, phone, is_valid, role_ids, create_date, update_date
+    </sql>
+
+    <select id="queryUserByUserName" resultType="com.yjx.vo.User">
+        select <include refid="Base_Column_List"/> from t_user where user_name=#{userName} and is_valid=1
+    </select>
+
+    <insert id="insertSelective" parameterType="com.yjx.vo.User" useGeneratedKeys="true" keyProperty="id">
+        insert into t_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userName != null">user_name,</if>
+            <if test="userPwd != null">user_pwd,</if>
+            <if test="trueName != null">true_name,</if>
+            <if test="email != null">email,</if>
+            <if test="phone != null">phone,</if>
+            <if test="isValid != null">is_valid,</if>
+            <if test="roleIds != null">role_ids,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userName != null">#{userName,jdbcType=VARCHAR},</if>
+            <if test="userPwd != null">#{userPwd,jdbcType=VARCHAR},</if>
+            <if test="trueName != null">#{trueName,jdbcType=VARCHAR},</if>
+            <if test="email != null">#{email,jdbcType=VARCHAR},</if>
+            <if test="phone != null">#{phone,jdbcType=VARCHAR},</if>
+            <if test="isValid != null">#{isValid,jdbcType=INTEGER},</if>
+            <if test="roleIds != null">#{roleIds,jdbcType=VARCHAR},</if>
+        </trim>
+    </insert>
+    <insert id="insertHasKey" parameterType="com.yjx.vo.User" useGeneratedKeys="true" keyProperty="id">
+        insert into t_user (user_name, user_pwd, true_name, email, phone, is_valid, role_ids)
+        values (#{userName}, #{userPwd}, #{trueName}, #{email}, #{phone}, #{isValid}, #{roleIds})
+    </insert>
+    <insert id="insertBatch" parameterType="java.util.List">
+        insert into t_user (user_name, user_pwd, true_name, email, phone, is_valid, role_ids) values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.userName}, #{item.userPwd}, #{item.trueName}, #{item.email}, #{item.phone}, #{item.isValid}, #{item.roleIds})
+        </foreach>
+    </insert>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/> from t_user where id = #{id,jdbcType=INTEGER} and is_valid = 1
+    </select>
+    <select id="selectByParams" parameterType="com.yjx.query.UserQuery" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/> from t_user where is_valid = 1
+        <if test="userName != null and userName != ''">
+            and user_name like concat('%',#{userName},'%')
+        </if>
+        <if test="email != null and email != ''">
+            and email like concat('%',#{email},'%')
+        </if>
+        <if test="phone != null and phone != ''">
+            and phone like concat('%',#{phone},'%')
+        </if>
+        order by create_date desc
+    </select>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.yjx.vo.User">
+        update t_user
+        <set>
+            <if test="userName != null">user_name = #{userName,jdbcType=VARCHAR},</if>
+            <if test="userPwd != null">user_pwd = #{userPwd,jdbcType=VARCHAR},</if>
+            <if test="trueName != null">true_name = #{trueName,jdbcType=VARCHAR},</if>
+            <if test="email != null">email = #{email,jdbcType=VARCHAR},</if>
+            <if test="phone != null">phone = #{phone,jdbcType=VARCHAR},</if>
+            <if test="roleIds != null">role_ids = #{roleIds,jdbcType=VARCHAR},</if>
+        </set>
+        where id = #{id,jdbcType=INTEGER}
+    </update>
+    <update id="updateBatch" parameterType="java.util.List">
+        <foreach collection="list" item="item" separator=";">
+            update t_user set true_name = #{item.trueName} where id = #{item.id}
+        </foreach>
+    </update>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        update t_user set is_valid = 0 where id = #{id,jdbcType=INTEGER}
+    </delete>
+    <delete id="deleteBatch" parameterType="java.lang.Integer">
+        update t_user set is_valid = 0 where id in
+        <foreach collection="array" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <select id="queryAllUsers" resultType="com.yjx.vo.User">
+        select <include refid="Base_Column_List"/> from t_user where is_valid = 1 order by id
+    </select>
+</mapper>

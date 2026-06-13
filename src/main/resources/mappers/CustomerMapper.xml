@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjx.dao.CustomerMapper">
+    <resultMap id="BaseResultMap" type="com.yjx.vo.Customer">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="khno" jdbcType="VARCHAR" property="khno"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="area" jdbcType="VARCHAR" property="area"/>
+        <result column="cus_manager" jdbcType="VARCHAR" property="cusManager"/>
+        <result column="level" jdbcType="VARCHAR" property="level"/>
+        <result column="myd" jdbcType="VARCHAR" property="myd"/>
+        <result column="xyd" jdbcType="VARCHAR" property="xyd"/>
+        <result column="address" jdbcType="VARCHAR" property="address"/>
+        <result column="post_code" jdbcType="VARCHAR" property="postCode"/>
+        <result column="phone" jdbcType="VARCHAR" property="phone"/>
+        <result column="fax" jdbcType="VARCHAR" property="fax"/>
+        <result column="web_site" jdbcType="VARCHAR" property="webSite"/>
+        <result column="yyzzzch" jdbcType="VARCHAR" property="yyzzzch"/>
+        <result column="fr" jdbcType="VARCHAR" property="fr"/>
+        <result column="zczj" jdbcType="VARCHAR" property="zczj"/>
+        <result column="nyye" jdbcType="VARCHAR" property="nyye"/>
+        <result column="khyh" jdbcType="VARCHAR" property="khyh"/>
+        <result column="khzh" jdbcType="VARCHAR" property="khzh"/>
+        <result column="dsdjh" jdbcType="VARCHAR" property="dsdjh"/>
+        <result column="gsdjh" jdbcType="VARCHAR" property="gsdjh"/>
+        <result column="state" jdbcType="INTEGER" property="state"/>
+        <result column="is_valid" jdbcType="INTEGER" property="isValid"/>
+        <result column="create_date" jdbcType="TIMESTAMP" property="createDate"/>
+        <result column="update_date" jdbcType="TIMESTAMP" property="updateDate"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, khno, name, area, cus_manager, level, myd, xyd, address, post_code, phone,
+        fax, web_site, yyzzzch, fr, zczj, nyye, khyh, khzh, dsdjh, gsdjh, state, is_valid,
+        create_date, update_date
+    </sql>
+
+    <insert id="insertSelective" parameterType="com.yjx.vo.Customer" useGeneratedKeys="true" keyProperty="id">
+        insert into t_customer
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="khno != null">khno,</if>
+            <if test="name != null">name,</if>
+            <if test="area != null">area,</if>
+            <if test="cusManager != null">cus_manager,</if>
+            <if test="level != null">level,</if>
+            <if test="myd != null">myd,</if>
+            <if test="xyd != null">xyd,</if>
+            <if test="address != null">address,</if>
+            <if test="postCode != null">post_code,</if>
+            <if test="phone != null">phone,</if>
+            <if test="fax != null">fax,</if>
+            <if test="webSite != null">web_site,</if>
+            <if test="yyzzzch != null">yyzzzch,</if>
+            <if test="fr != null">fr,</if>
+            <if test="zczj != null">zczj,</if>
+            <if test="nyye != null">nyye,</if>
+            <if test="khyh != null">khyh,</if>
+            <if test="khzh != null">khzh,</if>
+            <if test="dsdjh != null">dsdjh,</if>
+            <if test="gsdjh != null">gsdjh,</if>
+            <if test="isValid != null">is_valid,</if>
+            <if test="createDate != null">create_date,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="khno != null">#{khno},</if>
+            <if test="name != null">#{name},</if>
+            <if test="area != null">#{area},</if>
+            <if test="cusManager != null">#{cusManager},</if>
+            <if test="level != null">#{level},</if>
+            <if test="myd != null">#{myd},</if>
+            <if test="xyd != null">#{xyd},</if>
+            <if test="address != null">#{address},</if>
+            <if test="postCode != null">#{postCode},</if>
+            <if test="phone != null">#{phone},</if>
+            <if test="fax != null">#{fax},</if>
+            <if test="webSite != null">#{webSite},</if>
+            <if test="yyzzzch != null">#{yyzzzch},</if>
+            <if test="fr != null">#{fr},</if>
+            <if test="zczj != null">#{zczj},</if>
+            <if test="nyye != null">#{nyye},</if>
+            <if test="khyh != null">#{khyh},</if>
+            <if test="khzh != null">#{khzh},</if>
+            <if test="dsdjh != null">#{dsdjh},</if>
+            <if test="gsdjh != null">#{gsdjh},</if>
+            <if test="isValid != null">#{isValid},</if>
+            <if test="createDate != null">#{createDate},</if>
+        </trim>
+    </insert>
+    <insert id="insertHasKey" parameterType="com.yjx.vo.Customer" useGeneratedKeys="true" keyProperty="id">
+        insert into t_customer (khno, name, area, cus_manager, level, is_valid, create_date)
+        values (#{khno}, #{name}, #{area}, #{cusManager}, #{level}, #{isValid}, #{createDate})
+    </insert>
+    <insert id="insertBatch" parameterType="java.util.List">
+        insert into t_customer (khno, name, area, cus_manager, level, is_valid) values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.khno}, #{item.name}, #{item.area}, #{item.cusManager}, #{item.level}, #{item.isValid})
+        </foreach>
+    </insert>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/> from t_customer where id = #{id} and is_valid = 1
+    </select>
+    <select id="selectByParams" parameterType="com.yjx.query.CustomerQuery" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/> from t_customer where is_valid = 1
+        <if test="name != null and name != ''">
+            and name like concat('%',#{name},'%')
+        </if>
+        <if test="khno != null and khno != ''">
+            and khno like concat('%',#{khno},'%')
+        </if>
+        <if test="area != null and area != ''">
+            and area like concat('%',#{area},'%')
+        </if>
+        order by create_date desc
+    </select>
+    <select id="countByLevel" resultType="java.util.Map">
+        select level as name, count(1) as value from t_customer where is_valid = 1 group by level
+    </select>
+    <select id="countByArea" resultType="java.util.Map">
+        select area as name, count(1) as value from t_customer where is_valid = 1 group by area
+    </select>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.yjx.vo.Customer">
+        update t_customer
+        <set>
+            <if test="khno != null">khno = #{khno},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="area != null">area = #{area},</if>
+            <if test="cusManager != null">cus_manager = #{cusManager},</if>
+            <if test="level != null">level = #{level},</if>
+            <if test="myd != null">myd = #{myd},</if>
+            <if test="xyd != null">xyd = #{xyd},</if>
+            <if test="address != null">address = #{address},</if>
+            <if test="postCode != null">post_code = #{postCode},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="fax != null">fax = #{fax},</if>
+            <if test="webSite != null">web_site = #{webSite},</if>
+            <if test="yyzzzch != null">yyzzzch = #{yyzzzch},</if>
+            <if test="fr != null">fr = #{fr},</if>
+            <if test="zczj != null">zczj = #{zczj},</if>
+            <if test="nyye != null">nyye = #{nyye},</if>
+            <if test="khyh != null">khyh = #{khyh},</if>
+            <if test="khzh != null">khzh = #{khzh},</if>
+            <if test="dsdjh != null">dsdjh = #{dsdjh},</if>
+            <if test="gsdjh != null">gsdjh = #{gsdjh},</if>
+        </set>
+        where id = #{id}
+    </update>
+    <update id="updateBatch" parameterType="java.util.List">
+        <foreach collection="list" item="item" separator=";">
+            update t_customer set level = #{item.level} where id = #{item.id}
+        </foreach>
+    </update>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        update t_customer set is_valid = 0 where id = #{id}
+    </delete>
+    <delete id="deleteBatch" parameterType="java.lang.Integer">
+        update t_customer set is_valid = 0 where id in
+        <foreach collection="array" item="item" open="(" separator="," close=")">#{item}</foreach>
+    </delete>
+</mapper>

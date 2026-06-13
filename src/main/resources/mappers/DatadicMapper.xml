@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjx.dao.DatadicMapper">
+    <resultMap id="BaseResultMap" type="com.yjx.vo.Datadic">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="data_dic_name" jdbcType="VARCHAR" property="dataDicName"/>
+        <result column="data_dic_value" jdbcType="VARCHAR" property="dataDicValue"/>
+        <result column="is_valid" jdbcType="INTEGER" property="isValid"/>
+        <result column="create_date" jdbcType="TIMESTAMP" property="createDate"/>
+        <result column="update_date" jdbcType="TIMESTAMP" property="updateDate"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, data_dic_name, data_dic_value, is_valid, create_date, update_date
+    </sql>
+
+    <insert id="insertSelective" parameterType="com.yjx.vo.Datadic" useGeneratedKeys="true" keyProperty="id">
+        insert into t_datadic
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="dataDicName != null">data_dic_name,</if>
+            <if test="dataDicValue != null">data_dic_value,</if>
+            <if test="isValid != null">is_valid,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="dataDicName != null">#{dataDicName},</if>
+            <if test="dataDicValue != null">#{dataDicValue},</if>
+            <if test="isValid != null">#{isValid},</if>
+        </trim>
+    </insert>
+    <insert id="insertHasKey" parameterType="com.yjx.vo.Datadic" useGeneratedKeys="true" keyProperty="id">
+        insert into t_datadic (data_dic_name, data_dic_value, is_valid) values (#{dataDicName}, #{dataDicValue}, #{isValid})
+    </insert>
+    <insert id="insertBatch" parameterType="java.util.List">
+        insert into t_datadic (data_dic_name, data_dic_value, is_valid) values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.dataDicName}, #{item.dataDicValue}, #{item.isValid})
+        </foreach>
+    </insert>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/> from t_datadic where id = #{id} and is_valid = 1
+    </select>
+    <select id="selectByParams" parameterType="com.yjx.query.DatadicQuery" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/> from t_datadic where is_valid = 1
+        <if test="dataDicName != null and dataDicName != ''">
+            and data_dic_name like concat('%',#{dataDicName},'%')
+        </if>
+        order by data_dic_name, id
+    </select>
+    <select id="queryAllDicNames" resultType="java.util.Map">
+        select distinct data_dic_name as name from t_datadic where is_valid = 1 order by data_dic_name
+    </select>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.yjx.vo.Datadic">
+        update t_datadic
+        <set>
+            <if test="dataDicName != null">data_dic_name = #{dataDicName},</if>
+            <if test="dataDicValue != null">data_dic_value = #{dataDicValue},</if>
+        </set>
+        where id = #{id}
+    </update>
+    <update id="updateBatch" parameterType="java.util.List">
+        <foreach collection="list" item="item" separator=";">
+            update t_datadic set data_dic_value = #{item.dataDicValue} where id = #{item.id}
+        </foreach>
+    </update>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        update t_datadic set is_valid = 0 where id = #{id}
+    </delete>
+    <delete id="deleteBatch" parameterType="java.lang.Integer">
+        update t_datadic set is_valid = 0 where id in
+        <foreach collection="array" item="item" open="(" separator="," close=")">#{item}</foreach>
+    </delete>
+</mapper>
